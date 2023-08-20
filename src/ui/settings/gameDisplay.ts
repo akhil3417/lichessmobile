@@ -2,7 +2,10 @@ import h from 'mithril/hyperscript'
 import i18n from '../../i18n'
 import settings from '../../settings'
 import * as helper from '../helper'
-import { dropShadowHeader, backButton } from '../shared/common'
+// import { dropShadowHeader, backButton } from '../shared/common'
+import {backButton, dropShadowHeader} from '../shared/common'
+import {onPieceNotationChange} from '../shared/round/view/replay'
+import redraw from '../../utils/redraw'
 import formWidgets from '../shared/form'
 import layout from '../layout'
 
@@ -14,6 +17,13 @@ export default {
     return layout.free(header, renderBody())
   }
 } as Mithril.Component
+
+function toggleSquareCoordSettings(show: boolean) {
+    const el = document.getElementById('square-coords-settings-list')
+    if (el) {
+        el.className = show ? 'open' : 'closed'
+    }
+}
 
 function renderBody() {
   return [
@@ -33,6 +43,35 @@ function renderBody() {
       h('li.list_item',
         formWidgets.renderMultipleChoiceButton(i18n('boardCoordinates'), formWidgets.booleanChoice, settings.game.coords)
       ),
+      h('li.list_item', [
+               formWidgets.renderCheckbox('Coordinates on every square', 'squareCoords', settings.game.squareCoords.enabled, toggleSquareCoordSettings),
+               h('ul#square-coords-settings-list', {class: settings.game.squareCoords.enabled() ? 'open' : 'closed'}, [
+                   h('li.list_item.square-coords-opacity-setting', [
+                       formWidgets.renderSlider(
+                           'White opacity', 'whiteOpacity', 0, 100, 1, settings.game.squareCoords.whiteSquaresOpacity,
+                           redraw
+                       )]),
+                   h('li.list_item.square-coords-opacity-setting', [
+                       formWidgets.renderSlider(
+                           'Black opacity', 'blackOpacity', 0, 100, 1, settings.game.squareCoords.blackSquaresOpacity,
+                           redraw
+                       )]),
+                   h('li.list_item.square-coords-opacity-setting', [
+                       h('div', {className: 'overlay-coordinates-sample-wrapper'}, [
+                               h('div', {className: 'overlay-coordinates-sample board'}),
+                               h('div', {
+                                   className: 'overlay-coordinates-sample white-squares',
+                                   style: {opacity: (settings.game.squareCoords.whiteSquaresOpacity() / 100).toString(10)}
+                               }),
+                               h('div', {
+                                   className: 'overlay-coordinates-sample black-squares',
+                                   style: {opacity: (settings.game.squareCoords.blackSquaresOpacity() / 100).toString(10)}
+                               })
+                           ]
+                       )]
+                   )]
+               )
+           ]),
       h('li.list_item',
         formWidgets.renderMultipleChoiceButton(i18n('moveListWhilePlaying'), formWidgets.booleanChoice, settings.game.moveList)
       ),

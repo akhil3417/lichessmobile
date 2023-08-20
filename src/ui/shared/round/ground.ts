@@ -29,13 +29,12 @@ function makeConfig(data: OnlineGameData, fen: string, flip = false): cg.InitCon
     lastMove,
     check: lastStep.check,
     coordinates: settings.game.coords(),
-    autoCastle: true,
     squareCoordinates: {
       enabled: settings.game.squareCoords.enabled(),
       whiteSquaresOpacity: settings.game.squareCoords.whiteSquaresOpacity(),
       blackSquaresOpacity: settings.game.squareCoords.blackSquaresOpacity()
     },
-    autoCastle: data.game.variant.key === 'standard',
+    autoCastle: true,
     highlight: {
       lastMove: settings.game.highlights(),
       check: settings.game.highlights()
